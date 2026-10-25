@@ -1,0 +1,27 @@
+---
+description: Do not emit MSVC C4702 unreachable code.
+globs: Source/**/*.h, Source/**/*.cpp
+alwaysApply: true
+---
+
+# Unreachable code (C4702)
+MSVC treats C4702 as an error. Every statement in a function must be reachable.
+
+A `for` loop that always returns, breaks, or continues from the body makes the increment unreachable. When the function only needs the first match, use one iterator check.
+
+```cpp
+// C4702. ++It never runs.
+for (TActorIterator<AJoA_GridManager> It(World); It; ++It)
+{
+	return *It;
+}
+
+// First match. No unreachable increment.
+TActorIterator<AJoA_GridManager> It(World);
+if (It)
+{
+	return *It;
+}
+```
+
+The same rule covers any statement after an unconditional `return`, `break`, `continue`, or `throw`.

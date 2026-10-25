@@ -1,0 +1,29 @@
+# Unreal Engine temporary and generated directories
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# IDE files and directories (Visual Studio, Rider, VS Code)
+.vs/
+.idea/
+.fleet/
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.dtbcache
+
+# Other temporary files
+*.tmp
+*.log
+
+# Local editor bridge, not part of the game
+Plugins/EngineWire/
+.cursor/rules/engineWire.mdc
+.cursor/mcp.json
+
+# Local Perforce client
+p4config.txt

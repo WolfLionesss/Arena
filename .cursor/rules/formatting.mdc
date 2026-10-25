@@ -1,0 +1,96 @@
+---
+description: C++ Formatting Rules: Line Length Limit (Max 60 Characters)
+alwaysApply: true
+---
+
+Strictly enforce a maximum line length of 60 characters for code statements. When any statement exceeds 60 characters, break it according to the following rules:
+
+# Rule 1: Split Variable Declaration / Assignment
+If a standard assignment line exceeds 60 characters, break it immediately after the assignment operator (`=`):
+
+Example:
+// Exceeds 60 characters:
+// FGameplayEffectContextHandle Context = AbilitySystemComponent->MakeEffectContext();
+
+// Formatted:
+FGameplayEffectContextHandle Context =
+    AbilitySystemComponent->MakeEffectContext();
+
+---
+
+# Rule 2: Multi-line Subobject / Function Calls
+If splitting after `=` still leaves the right-hand side (or second line) longer than 60 characters, split the method, template arguments, or parameter list across multiple indented lines:
+
+Example:
+AbilitySystemComponent =
+    CreateDefaultSubobject<UAbilitySystemComponent>(
+        TEXT("AbilitySystemComponent"));
+
+---
+
+# Rule 3: Function Parameters and Constructor Arguments
+When function signatures, declarations, or calls exceed 60 characters due to multiple parameters or long arguments, place each argument on its own line:
+
+Example - Function Calls:
+// Exceeds 60 characters:
+// ApplyGameplayEffectToTarget(EffectClass, TargetASC, Level, Context);
+
+// Formatted:
+ApplyGameplayEffectToTarget(
+    EffectClass,
+    TargetASC,
+    Level,
+    Context
+);
+
+Example - Function Declarations / Definitions:
+void AMyCharacter::GrantAbility(
+    TSubclassOf<UGameplayAbility> AbilityToGrant,
+    int32 InputID,
+    int32 Level
+);
+
+---
+
+# Rule 4: Constructor Initializer Lists
+If member initialization lists in constructors exceed 60 characters, align each initializer on a new line:
+
+Example:
+AMyActor::AMyActor()
+    : PrimaryActorTick.bCanEverTick(true)
+    , HealthComponent(CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp")))
+{
+}
+
+---
+
+## General Guidelines:
+- Indentations: Use standard 4 spaces (or 1 tab) per nesting level for line continuations.
+- Break points: Always break after `=`, opening parenthesis `(`, commas `,`, or template brackets `<` when lines exceed 60 characters.
+- Consistency: Apply these rules strictly across all C++ header (`.h`) and source (`.cpp`) files in Unreal Engine projects.
+
+---
+
+# Rule 5: Include Order
+The class header is the first include. It has no section comment.
+
+Group every later include under a banner. Leave one blank line between groups. Omit an empty group. Keep this order:
+
+```
+// --- Engine ---
+// --- GAME ---
+// --- GAS ---
+// --- Components ---
+// --- Materials ---
+// --- Helpers ---
+// --- Net ---
+```
+
+Iris stays last, inside `#if UE_WITH_IRIS`, with no extra banner.
+
+- **Engine**: Unreal headers that are not Components, Materials, Helpers, Net, or GAS. Sort the include paths.
+- **GAME**: this project's headers outside `GAS/`. Core classes come first, in this order: GameMode, GameState, PlayerController, PlayerState, Pawn. Every other game class follows, sorted by include path.
+- **GAS**: `AbilitySystem*`, `AttributeSet`, `GameplayEffect*`, `GameplayTag*`, `NativeGameplayTags`, and anything under `GAS/`. Engine GAS headers come first, then project headers. Sort each of those two groups by include path.
+- **Components**: `Components/`. **Materials**: `Materials/`. **Helpers**: `UObject/ConstructorHelpers.h`. **Net**: `Net/` and `UObject/CoreNet.h`.
+
+In a header, `CoreMinimal.h` stays first and `Class.generated.h` stays last. Neither gets a banner.

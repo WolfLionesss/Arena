@@ -1,0 +1,19 @@
+---
+description: Skeletal mesh assets use the SM_ prefix and the asset name.
+alwaysApply: true
+---
+
+# Skeletal mesh asset names
+
+A skeletal mesh is `SM_` plus the asset name in Pascal case.
+
+- `knight` becomes `SM_Knight`.
+- `barbarian` becomes `SM_Barbarian`.
+- `mage` becomes `SM_Mage`.
+- `ranger` becomes `SM_Ranger`.
+
+Do not append a number when another asset already uses the bare name. The mesh is `SM_Knight`. The material can keep the name `knight`.
+
+The package name and the object name are the same: `SM_Knight.SM_Knight`.
+
+Rename the mesh in the Content Browser. That writes a redirector. Then right-click the folder and run Update Redirector References. Do not add an `ObjectRedirect` to `Config/DefaultEngine.ini`.

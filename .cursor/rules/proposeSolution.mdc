@@ -1,0 +1,62 @@
+---
+description: >-
+  For every request the AI does the maximum it can.
+  What it cannot do is a numbered list for the user.
+alwaysApply: true
+---
+
+# Do the work
+
+For every user request, the AI does the maximum
+it can. The user does only what the AI cannot.
+
+This includes **navrhni**, **navrhni reseni**, **navrhni řešení**,
+and **propose a solution**. Those phrases are not
+required. Any command follows the same split.
+
+## AI does
+
+- C++, config, and project rules
+- EngineWire MCP: `search`, `describe`, `execute`,
+  then Live Coding after a `.cpp` or `.h` edit
+- Asset paths already in Content
+- Default transforms and grip offsets
+- Iteration from the user's visual feedback
+
+## What the AI cannot do
+
+Write it as numbered steps in the user's language.
+Name the menu, the node, and the value.
+Do not stop at "do this in the editor".
+
+## User does only
+
+- Open the editor / PIE when needed
+- Visual judgment (for example "sword too high")
+- The numbered steps above
+
+## Plans
+
+List **User (only)** as a short checklist.
+Everything else is **AI**.
+
+## Plan or Ask mode
+
+When the user writes "navrhni", "navrhni reseni", "navrhni řešení", or "propose a solution" in Plan or Ask mode, the last line of the reply is exactly: Na toto řešení potřebuji <model>, <effort>, <context>. Nothing follows it. In Agent mode that line is absent.
+
+- **model**: the display name, for example `Grok 4.7`.
+- **effort**: `Low`, `Medium`, or `High`.
+- **context**: the window, for example `256K`.
+
+Pick the smallest set that can carry out the plan.
+A short C++ change is `Grok 4.7`, `Low`, `256K`.
+Raise the effort or the context only when the plan
+spans many files or a hard design choice.
+
+The agent cannot set the model, the effort, or the
+context window. The user sets those from that line,
+then starts the implementation.
+
+Before the first edit of that implementation, read
+only the files the plan named. Do not load the
+whole repository.

@@ -1,0 +1,63 @@
+---
+description: Client figure selection must keep working after HUD or net changes.
+alwaysApply: true
+---
+
+# Client figure selection
+
+A listen-server client must pick its own figures from
+portraits, a world click, and keys 1-4. HUD and
+replication edits keep breaking this. Check the
+client path, not only the host.
+
+## Canvas overlays
+
+`AddChildToCanvas` stretch-fills the HUD. That covers
+`HB_LocalFigures`. Portraits get no click. `HitsHud`
+then eats world clicks too.
+
+```cpp
+// Fills the HUD. Portraits die.
+Canvas->AddChildToCanvas(Box);
+
+UCanvasPanelSlot* Slot =
+	Canvas->AddChildToCanvas(Box);
+Slot->SetAnchors(FAnchors(0.5f, 1.f));
+Slot->SetAutoSize(true);
+```
+
+Set AutoSize in the same function as the add.
+`Place*` can return before Slate has a size.
+Empty Jump/Fall/action rows stay `Collapsed`.
+
+## HitsHud
+
+Test portraits and buttons only. Never a stretch
+row (`HB_LocalFigures`, `HB_ActionButtons`).
+Skip `Collapsed`, `Hidden`, `HitTestInvisible`,
+`SelfHitTestInvisible`, and size under 1.
+The Play widget itself is `SelfHitTestInvisible`.
+`JoA.Match.TwoPlayerFlow` CheckPortraitHits must
+keep the board centre free of HUD hits.
+
+## OwnsFigure
+
+The `OwningPlayerState` pointer can still be
+unmapped. Match `SeatIndex` to `OwningPlayerIndex`.
+`SyncFigures` waits until one of those is known.
+Do not leave an own figure in `HB_OpponentFigures`
+or with `SetClickable(false)`.
+
+`OnRep_SeatIndex` on the player state and
+`OnRep_OwningPlayerIndex` on the figure must both
+`NotifyBoardChanged`. The seat int often arrives
+after the first HUD build. Without that rebuild
+own portraits stay in `HB_OpponentFigures` with
+`SetClickable(false)`. Portraits, world click,
+and keys 1-4 then all die on the client. Team
+tint in `OnRep_OwningPlayerIndex` is not enough.
+
+## Test
+
+`JoA.Match.TwoPlayerFlow` CheckPortraitHits. Own-row
+portraits on `NM_Client` must be `Visible`.

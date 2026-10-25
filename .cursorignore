@@ -1,0 +1,23 @@
+# Unreal Engine generated and temporary folders
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# IDE files and build solution files
+.vs/
+.idea/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Version control files
+.p4ignore
+.git/
+
+# Logs and temporary/large data files
+*.log
+*.tmp
+*.pdb

@@ -1,0 +1,67 @@
+---
+description: How M_Atlas reads T_Atlas_Packed. UV rules for every mesh.
+alwaysApply: true
+---
+
+# M_Atlas and T_Atlas_Packed
+
+Material `/Game/Materials/M_Atlas`. Texture
+`Content/Materials/Textures/T_Atlas_Packed.png`, 1024 x 8192.
+Unlit: the result goes to Emissive Color. C++ side is
+`JoA_Atlas.h` and `JoA_Atlas.cpp`. `M_Atlas` is a binary
+`.uasset`, so this file is the only readable copy of the graph.
+
+## Control, Custom Primitive Data (per component, not per slot)
+- Data 0 `TileIndex`: 0 white, 1 black, 2 blue, 3 red.
+  Below 0 means checker (board). Default 0.
+- Data 1 `UsePalette`: 0 reads a tile, 1 reads a palette row.
+- Data 2 `PaletteRow`: 0 knight, 1 barbarian, 2 mage,
+  3 ranger. Row 4 is the wood cell (see below).
+
+## Layout of the texture (pixels, origin top left)
+- Row y 0-255: four tiles, each 256 x 256, left to right
+  white, black, blue, red.
+- Rows y 256-4351: team stripe 256 high, then four palette
+  rows of 1024 high (knight, barbarian, mage, ranger).
+- y 4352-4607, x 0-255: brown 256 x 256, `#6B4423`.
+  Reached as palette row 4. Material graph is unchanged.
+- y 5376-6399: crate face, palette row 5. One
+  quarter of `T_Wood` (top left) fills the row.
+  A 4 px edge repeats so mips stay off the
+  black rows beside it.
+- Everything from y 4608-5375 and below y 6400
+  is black and unused.
+
+## How UV is read
+- Tile mode (UsePalette 0): UV of the mesh is LOCAL to one
+  tile, 0..1. Tile U = (u * 0.96 + 0.02 + Index) / 4.
+  Tile V = (v * 0.96 + 0.02) * 0.03125. The mesh UV never
+  picks the tile. Only TileIndex does.
+  A mesh in tile mode has ONE colour. Different colours need
+  different components.
+- Palette mode (UsePalette 1): U is absolute across the
+  atlas width. V = 0.03125 + 0.125 * (v + PaletteRow).
+  So v 0..1 is one 1024 px row, v 0..0.25 is the first
+  256 px band of that row.
+- Board: UV clamped 0..0.999, times 8, checker by
+  floor(x) + floor(y) mod 2 when TileIndex < 0.
+
+## Team tint
+- TeamColor = lerp(TeamBlue, TeamRed, saturate(Index - 2)).
+- Tint amount = mask R * saturate(TileIndex - 1) * TintAmount.
+  A tile index of 0 or 1 never tints.
+- Palette figures keep their team tile (2 or 3) in Data 0, so
+  the mask paints the team colour on them.
+
+## Rules for a new mesh with a flat colour
+- One colour per component. Split a mesh with two colours
+  into two meshes (for example Banner and Wood).
+- Team colour mesh (Banner): tile mode, `ApplyTile` with
+  BlueTile or RedTile. Any UV inside 0..1 works.
+- Wood: palette mode, `ApplyPalette(Comp, WhiteTile, 4)`.
+  In Blender set UV U = 0.125 and V = 0.875 for the brown
+  centre. Blender V is bottom up, Unreal V is top down.
+  Scale the island to 0.001 around that point.
+- Do not use absolute atlas coordinates in tile mode.
+- Do not edit `T_Atlas_Packed.png` below y 4352 without
+  telling the user. Rows 0-4351 belong to other work.

@@ -1,0 +1,82 @@
+JoA Arena
+
+JoA Arena uses Unreal® Engine. Unreal® is a trademark
+or registered trademark of Epic Games, Inc. in the
+United States of America and elsewhere.
+
+Unreal® Engine, Copyright 1998 – 2026, Epic Games, Inc.
+All rights reserved.
+
+KayKit - Character Pack: Adventurers by Kay Lousberg
+https://kaylousberg.itch.io/kaykit-adventurers
+CC0 1.0
+
+KayKit - Character Animations by Kay Lousberg
+https://kaylousberg.itch.io/kaykit-character-animations
+CC0 1.0
+
+Low-poly medieval tavern by Igor Rogov (creativemood)
+https://sketchfab.com/3d-models/low-poly-medieval-tavern-0ceb0634c89349b6bec27d19228835e9
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Modified: side walls were added. They were missing
+on the original model.
+
+heart pixel art by Flixberry Entertainment
+https://opengameart.org/content/heart-pixel-art
+Offered under Creative Commons Attribution 3.0 and
+Creative Commons Attribution 4.0.
+https://creativecommons.org/licenses/by/3.0/
+https://creativecommons.org/licenses/by/4.0/
+
+Attack icon and shield icon generated with
+Google Gemini.
+
+Obstacle: wooden crate by Shadowman
+https://opengameart.org/content/crates-2
+CC0 1.0
+Content/Materials/Textures/T_Wood.uasset
+One quarter is packed into the atlas,
+palette row 5.
+
+Arrow: Dart/Arrow Trap by jacobo1304
+https://freesound.org/people/jacobo1304/sounds/866990/
+CC0 1.0
+
+Cheer: People screaming in agony when charging into
+battle by florianreichelt
+https://freesound.org/people/florianreichelt/sounds/563011/
+CC0 1.0
+Shortened for the game.
+
+Death: Grunt2 - Death Pain by tonsil5
+https://freesound.org/people/tonsil5/sounds/416838/
+CC0 1.0
+Shortened for the game.
+
+Hurt: Hurt 1 - (Male) by Christopherderp
+https://freesound.org/people/Christopherderp/sounds/342229/
+CC0 1.0
+
+Jump: Jump_C_04 by cabled_mess
+https://freesound.org/people/cabled_mess/sounds/350906/
+CC0 1.0
+
+Place: Wooden Thud (Mono) by Breviceps
+https://freesound.org/people/Breviceps/sounds/449955/
+CC0 1.0
+
+Slash: Whoosh 03 by velcronator
+https://freesound.org/people/velcronator/sounds/733890/
+CC0 1.0
+
+Spell: Magic Spell by Universfield
+https://pixabay.com/sound-effects/film-special-effects-magic-spell-278824/
+Pixabay Content License
+https://pixabay.com/service/license-summary/
+Shortened for the game.
+
+Step: hiking-boot footsteps by Fission9
+https://freesound.org/people/Fission9/sounds/521590/
+CC0 1.0
+Shortened for the game.

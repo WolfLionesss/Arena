@@ -1,0 +1,38 @@
+---
+description: Avoid MSVC C2084 in UE unity builds.
+globs: Source/**/*.h, Source/**/*.cpp
+alwaysApply: true
+---
+
+# Unity build (C2084)
+
+UE compiles the module as one file
+(`Module.JoA_Arena.cpp`). Two `.cpp` files then
+share one translation unit.
+
+An anonymous-namespace function copied into a
+second `.cpp` is defined twice. MSVC reports
+C2084 (`already has a body`), then C2264 on
+every call.
+
+```cpp
+// C2084. JoA_W_Play.cpp and JoA_W_Game.cpp
+// both had this. Unity merged them.
+namespace
+{
+	void DisableButtonFocus(UButton* Button)
+	{
+		Button->IsFocusable = false;
+	}
+}
+```
+
+Fix: one `inline` helper in a header both
+files include. Here that is
+`JoA_DisableButtonFocus` in
+`UI/JoA_WidgetHelpers.h`.
+
+Do not copy a free function, `static` helper,
+or anonymous-namespace name into another
+`.cpp` of this module. Share one definition,
+or give that file its own name.

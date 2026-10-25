@@ -1,0 +1,10 @@
+---
+description: Rules for Steam Online Subsystem (OSS) integration, session handling, matchmaking, and Steam P2P multiplayer logic.
+globs: Source/**/*GameInstance*, Source/**/*Session*, Source/**/*Online*, Source/**/*.h, Source/**/*.cpp
+alwaysApply: false
+---
+
+- ALWAYS use `IOnlineSubsystem::Get(STEAM_SUBSYSTEM)` for session handling, matchmaking, and player identity.
+- Use `IOnlineSessionPtr` interface for creating, searching, and joining Steam Lobbies.
+- Ensure multiplayer connection strings utilize Steam P2P / Unique Net IDs when connecting clients to the host.
+- Wrap Steam-specific code safely with `#if WITH_STEAM` checks where appropriate or ensure Fallback to `NULL` subsystem for offline testing.

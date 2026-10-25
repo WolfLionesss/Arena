@@ -1,0 +1,53 @@
+---
+description: Critical Perforce (P4) version control safety guidelines and file management rules.
+globs: Source/**/*, Content/**/*, Config/**/*
+alwaysApply: true
+---
+
+- CRITICAL: NEVER suggest, generate, or execute a "submit", "commit", or "p4 submit" command. I must ALWAYS validate the Changelist (CL) in Unreal Engine before submitting.
+
+# Start of work: numbered CL first
+- When a new agent starts, or when the user describes a
+  feature to build, create a numbered CL immediately.
+- Write a short English description that names that
+  feature. The default changelist cannot hold a
+  description.
+- Open and add files on that CL from the first edit
+  (`p4 edit -c <CL>`, `p4 add -c <CL>`,
+  `p4 move -c <CL>`). Do not leave work on default.
+- If the user names a CL, use that number instead of
+  creating another.
+
+# New, moved, or renamed files
+- If a new, moved, or renamed file belongs on the
+  numbered CL of this work, `p4 add -c <CL>` or
+  `p4 move -c <CL>` at once. Do not ask.
+- Do not leave that file on default.
+
+# One CL for files that depend on each other
+- Do not put file A and file B on two CLs when a
+  change in A only works with the change in B,
+  or the other way around.
+- Keep those files on the same numbered CL.
+- If they must stay on two CLs because they
+  implement different features, stop and tell
+  the user: which files, why they depend, and
+  why they stay split (two features). Do not
+  move them without that warning.
+
+# Description
+- Keep the English description short and specific.
+- Do not rewrite it after every edit.
+
+# check CL
+- When the user writes `check CL`, do not submit.
+- Confirm every file changed in this work is open on
+  that numbered CL (not default, not another CL).
+  Open or add a missing file that belongs there.
+  Do not ask.
+- Read the CL description and the actual diffs. Update
+  the description only if it no longer matches what
+  was built (`p4 change -o <CL>`, then `p4 change -i`).
+- Report the CL number, the files, and whether the
+  description was left or corrected.
+- Never submit.

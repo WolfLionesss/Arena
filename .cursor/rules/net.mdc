@@ -1,0 +1,22 @@
+---
+description: Rules for server-authoritative turn-based multiplayer architecture, Iris Replication Framework, and Push Model compatibility in UE5.
+globs: Source/**/*.h, Source/**/*.cpp
+alwaysApply: true
+---
+
+# Multiplayer Architecture
+## UE
+- Design all gameplay logic with a strict **Server-Authoritative Multiplayer Architecture** for a 2-player turn-based game.
+- Keep turn state transitions clean and verified purely on the server (GameMode handles turn order).
+
+## Replication Frameworks (Iris vs. Push Model)
+- **Primary Framework (Iris):** ALWAYS prefer the modern **Iris Replication Framework** (`IrisCore`) for new code. Use `UE_REPLICATE_PROPERTY` macro standards compatible with Iris where applicable.
+- **Legacy/Push Model Compatibility:** If a class uses or requires the standard/legacy Push Model (e.g., `DOREPLIFETIME_WITH_PARAMS_FAST` or `MARK_PROPERTY_DIRTY_FROM_NAME`), apply these strict rules:
+  
+1. **Verify Build Dependency:** You **must check** that `"NetCore"` is present in the dependency module names in the project's `.Build.cs` file. If it is missing, ensure it is added, otherwise `MarkPropertyDirty` will cause a linker error.
+2. **Implement `GetLifetimeReplicatedProps`:** For standard Push Model replication, you **must** implement `void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override`. Do NOT use it for pure Iris components, but ALWAYS include it if UHT/the linker expects it for standard replicated properties.
+
+## Net update frequency
+- Never assign `NetUpdateFrequency` or `MinNetUpdateFrequency` directly. Public access is deprecated (C4996) and the next engine upgrade will fail to compile.
+- Set them with `SetNetUpdateFrequency()` and `SetMinNetUpdateFrequency()`.
+- Read them with `GetNetUpdateFrequency()` and `GetMinNetUpdateFrequency()`.

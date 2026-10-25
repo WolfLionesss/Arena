@@ -1,0 +1,40 @@
+---
+description: GAS architecture for this project. Concepts from Tranek. Code procedure from Narxim. The ASC stays on the figure.
+globs: Source/**/*.h, Source/**/*.cpp
+alwaysApply: true
+---
+
+# Default
+- Always prefix class names with `JoA_GAS_`
+
+# Core Reference & Documentation
+- **Concepts**: Tranek's GAS Documentation, https://github.com/tranek/GASDocumentation
+- **Code**: `narximGas.mdc` and `C:\Game\Arena\Narxim-GAS-Example\Source\GAS_Example`. When the two differ, follow Narxim.
+- Naming, the `JoA_GAS_` prefix, attribute accessors, clamping, and tags below still apply.
+
+# Architecture & Component Placement
+- **ASC Location**:
+  - Place `UAbilitySystemComponent` and its `UAttributeSet` on the figure. The figure owns the stats.
+  - One player fields several figures, so the ASC does not go on `APlayerState`.
+- **Initialization Lifecycle**:
+  - Server: `PossessedBy()`, then `InitAbilityActorInfo` with the figure as both owner and avatar.
+  - Client: when the owning player state replicates, not in `BeginPlay`.
+
+# Attributes & Gameplay Effects
+- Never use generic, project-wide, or default names (e.g., `JoA_AttributeSet`).
+- Always name the `AttributeSet` based on the specific context of the stats it contains.
+- *Example:* If the stats include Health, Stamina, Mana, Attack, Defense, or Heal, name the class `CombatSet`.
+- Always use `Set` as the class name suffix.
+- Use `UAttributeSet` for all numeric stats (Health, Mana, Action Points, Energy, etc.).
+- ALWAYS use the standard GAS macro block (`ATTRIBUTE_ACCESSORS`) in C++ headers for attribute getters, setters, and initializers.
+- Enforce Attribute clamping both in `PreAttributeChange()` (for instant changes) and `PostGameplayEffectExecute()` (for GE modifications).
+- Execute gameplay logic via `UGameplayEffect` (GEs) rather than setting attributes directly.
+
+# Gameplay Tags & Flow Control
+- Use `FGameplayTag` and `FGameplayTagContainer` for state management, turn phases (e.g., `State.Turn.Player1`, `State.Phase.Action`), status effects, and abilities blocking/canceling.
+- Prefer native C++ defined tags via `FNativeGameplayTag` over loose string declarations.
+
+# Logic Execution & Optimization
+- **NO Logic in Tick**: Avoid putting game logic, timer checks, or phase polling in `Tick()` or `NativeTick()`.
+- **Event-Driven**: Trigger actions, abilities, and UI updates strictly using GAS Gameplay Events (`UAbilitySystemBlueprintLibrary::SendGameplayEventToActor`), Gameplay Tags, and Attribute Change delegates (`GetGameplayAttributeValueChangeDelegate`).
+- Keep `UGameplayAbility` logic asynchronous where possible by utilizing `UAbilityTask` (e.g., waiting for events, input, or targets).

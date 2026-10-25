@@ -1,0 +1,117 @@
+Key,SourceString
+Figures.Knight,"The knight cannot jump over obstacles because he is too heavy, but he can destroy them."
+Figures.Infantry,"Light infantry can build obstacles."
+Figures.Archer,"Archers have unlimited range, with certain restrictions: if an obstacle has a height of 1, they can only target the unit directly behind it; if the obstacle has a height of 2, their line of sight is completely blocked."
+Figures.Medic,"Medics can heal allies, and their abilities do not cost stamina, rather than mana."
+Figures.Attack,"Only an enemy in reach, and only if you are not carrying a flag. A hit deals damage equal to your Attack. Defense does not reduce that damage. It only changes the hit chance and who pays Stamina. The attempt always spends Stamina, hit or miss, and then your turn ends. Repeating attacks on the same enemy raise the chance. Switching to another enemy starts the count again. Chance never goes above 100%. A Medic pays no Stamina when hit. While you hold a flag, every Stamina payment costs 1 extra, and you cannot attack."
+Figures.DefenseSeeAttack,"See attack's table."
+Figures.Reach,"Targets must lie on the line you are facing, including a diagonal facing. Obstacles change that line."
+Figures.Heal,"Medic only, on yourself or an ally, and not while carrying a flag. Heal is 2. You restore the missing Health, up to that 2, and you spend that same amount of Mana. A full ally cannot be healed. You can heal your own square. An ally must be on your rank or file, or on the diagonal you are facing. Anything of height 1 or more between you blocks the heal. Height 2 on the ally blocks it. Height 1 on the ally is allowed. The heal ends your turn. A Medic starts with 10 Mana and no Stamina."
+Figures.Pickup,"The flag on your square, or the flag on the square in front of you. It costs nothing and does not end the turn. You can hold one flag. Attack and Heal are blocked while you hold it, and Stamina actions cost 1 extra. Img 1 shows that medic has a flag, but it costs 0 stamina, because he has got mana. Img 2 shows picked up the flag from a figure and it shows that your move now costs 2 stamina instead of 1."
+Figures.Upgrade,"Once, automatically, when you step onto the enemy home rank without a flag. Attack, Defense, and Heal double. Max Health and current Health each rise by 5. The figure grows to 1.5x size and can climb two heights instead of one. No fall damage."
+About.Back,"Back"
+Menu.Sound,"Sound"
+Menu.SeedRange,"Seed must be a whole number from {0} to {1}."
+Menu.JoinFailed,"Join failed: {0}"
+Menu.CreatingSession,"Creating Steam session..."
+Menu.Connecting,"Connecting to {0}"
+Menu.TutorialOn,"Tutorial is on."
+Menu.TutorialOff,"Tutorial is off."
+Menu.Notice.MatchFull,"Match is full."
+Menu.Notice.MatchOver,"Match is over."
+Menu.Notice.HostClosed,"Host closed connection."
+Menu.Notice.InviteFailed,"Steam invite join failed."
+Menu.Help,"Go. One step forward. The arrow
+turns with the figure. After the
+step you stay on that figure. You
+can still turn and act. Auto pickup
+takes a flag you step on.
+
+Turn left / Turn right. Turn in
+place. The turn does not end.
+
+Jump. Climb the obstacle in front.
+Shown only when this figure can.
+The turn ends.
+
+Fall. Step down from height 1 or 2.
+Shown only then. The turn ends.
+
+Skip turn. Pass the turn, even after
+a move or an action. Nothing is gained.
+
+Rest. Pass the turn only before this
+seat has stepped, attacked, or healed.
+Every living figure of the seat gains
+1 stamina and 1 mana.
+
+Attack and heal. Shown for a target
+in reach. The label is that figure.
+Either one ends the turn.
+
+Destroy obstacle / Build obstacle.
+In reach. The turn ends.
+
+Pick up flag / Drop flag. Your flag
+or the enemy flag. The turn does
+not end.
+
+Rock, paper, scissors. Before the
+first turn only. The winner moves
+first."
+Play.DrawRock,"rock"
+Play.DrawPaper,"paper"
+Play.DrawScissors,"scissors"
+Play.ChosenRock,"rock"
+Play.ChosenPaper,"paper"
+Play.ChosenScissors,"scissors"
+Play.OpeningThrowChosen,"You have chosen a {0}."
+Play.OpeningThrowDraw,"The game ended in a draw. Both of you had a '{0}'. Play again..."
+Play.OpeningThrowPrompt,"The game will start, who wins in..."
+Play.Unit.Knight,"Knight"
+Play.Unit.Infantry,"L. Infantry"
+Play.Unit.Archer,"Archer"
+Play.Unit.Medic,"Medic"
+Play.Unit.None,"None"
+Play.PickUpYourFlag,"Pick up your flag."
+Play.PickUpEnemyFlag,"Pick up enemy flag."
+Play.DropFlag,"Drop flag"
+Play.DestroyObstacle,"Destroy obstacle"
+Play.BuildObstacle,"Build obstacle"
+Play.Jump,"Jump"
+Play.Fall,"Fall"
+Play.Reconnecting,"Connection lost. Reconnecting ({0})."
+Play.MatchDraw,"The game ended in a draw."
+Play.VictoryForfeit,"You have won! The opponent left."
+Play.DefeatForfeit,"You have lost! You left the match."
+Play.VictoryFlag,"You have won! Enemy flag captured."
+Play.DefeatFlag,"You have lost! Your flag was captured."
+Play.Victory,"You have won!"
+Play.Defeat,"You have lost!"
+Play.OpponentGone,"Opponent is offline. Waiting {0} s."
+Play.WaitingForOpponent,"Waiting for the opponent."
+Play.WaitAndThrow,"{0}
+{1}"
+Play.MatchPaused,"Match paused."
+Play.MustSkip,"You can't move and you can't attack or heal! You have to skip your turn."
+Play.OpeningThrowWon,"You have first move!"
+Play.NationFrench,"French"
+Play.NationEnglish,"English"
+Play.ThrowRock,"a rock"
+Play.ThrowPaper,"paper"
+Play.ThrowScissors,"scissors"
+Play.OpeningThrowLost,"The game has been won by {0}, played with {1}."
+Play.YourTurnTimed,"Your turn ({0} s)"
+Play.YourTurn,"Your turn"
+Play.OpponentTurnTimed,"Opponent's turn ({0} s)"
+Play.OpponentTurn,"Opponent's turn"
+Play.Key.Choose,"Press '1', '2', '3' or '4' to choose the figure."
+Play.Key.Scroll,"Scroll wheel to choose the figure."
+Play.Key.TurnLeft,"Press 'Q' to turn left."
+Play.Key.Forward,"Press 'W' to go forward."
+Play.Key.TurnRight,"Press 'E' to turn right."
+Play.Key.Jump,"Press 'Space' to jump."
+Play.Key.Obstacle,"Press 'LMB' to place an obstacle."
+Play.Key.PickUp,"Press 'I' to pick up."
+Play.Key.PutDown,"Press 'O' to put down."
+Play.Key.Rest,"Press 'RMB' to rest."
