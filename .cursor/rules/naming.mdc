@@ -1,65 +1,67 @@
 ---
 description: C++ naming, C4458, Unreal renames, and camelCase names for new Cursor rules.
-globs: Source/**/*.h, Source/**/*.cpp
 alwaysApply: true
 ---
 
-# C++ Naming Conventions
-## 1. Prefixes & Namespaces
-- **C++ Classes:** Always prefix class names with `JoA_` (e.g., `UJoA_UnitComponent`, `AJoA_Hero`), unless it is defined differently in @gas.mdc.
-- **Enums & Structs:** Never use project prefixes like `JoA_` or `JoA_Arena` (e.g., use `EMyEnum`, NOT `JoA_EMyEnum` or `JoA_EMyStruct`).
+# Prefixes
+- Classes use `JoA_` (`UJoA_UnitComponent`,
+  `AJoA_Hero`), unless `gas.mdc` says otherwise.
+- Enums and structs have no `JoA_` prefix.
+  `EUnitType`, `FDamageInfo`.
+- `A`, `U`, `F`, and `E` still apply. See `core.mdc`.
 
-## 2. Contextual Naming
-- For Enums and Structs, name them descriptive to their context (e.g., use `EUnitType` for unit type enumerations, `FDamageInfo` for damage data).
-
-## 3. Unreal Engine Standard Rules
-- Standard Unreal Engine prefixes strictly apply:
-  - `A` for Actors (e.g., `AJoA_Character`)
-  - `U` for UObjects / Components (e.g., `UJoA_InventoryComponent`)
-  - `F` for pure C++ structs (e.g., `FCharacterAttributes`)
-  - `E` for Enums (e.g., `EUnitState`)
-
-## 4. Widgets (UMG C++ classes)
-- A widget class always uses the prefix `JoA_W_`, then the Blueprint name with its `WBP_` prefix removed.
-- Keep the `U` prefix of Unreal Engine in front of the class name.
-- The Blueprint `WBP_Play` gives `UJoA_W_Play`. The Blueprint `WBP_CharacterStat` gives `UJoA_W_CharacterStat`.
-- The file name is the class name without the `U`: `JoA_W_Play.h` and `JoA_W_Play.cpp`.
-- A widget without a Blueprint yet takes the name the Blueprint will get, with `WBP_` removed.
-- This rule replaces the plain `JoA_` prefix from section 1 for widgets. It does not apply to `JoA_GAS_` classes.
+# Widgets
+- A widget class uses `JoA_W_`, then the Blueprint
+  name with `WBP_` removed. Keep the Unreal `U`.
+- `WBP_Play` becomes `UJoA_W_Play`. The file is
+  `JoA_W_Play.h` and `JoA_W_Play.cpp`.
+- A widget without a Blueprint yet takes the name
+  the Blueprint will get, with `WBP_` removed.
+- This replaces plain `JoA_` for widgets. It does
+  not apply to `JoA_GAS_` classes.
 
 # Local names must not hide members
-- Never declare a local variable, parameter, or lambda capture with the same name as a member of the current class or any base class.
-- Unreal builds this as error C4458. A matching name on `AActor`, `APawn`, `AController`, or `APlayerState` is enough to fail the compile.
-- Name the local after its role. `PlayerState` hides `APawn::PlayerState` and `AController::PlayerState`. Use `OwnerState` for an `AJoA_PlayerState*`.
-- The same rule covers inherited names such as `Owner`, `Controller`, `Instigator`, and `RootComponent`.
-
-```cpp
-// Hides APawn::PlayerState. Error C4458.
-AJoA_PlayerState* PlayerState = nullptr;
-
-// Role name. Does not hide the inherited member.
-AJoA_PlayerState* OwnerState = nullptr;
-```
+- A local, parameter, or lambda capture must not
+  match a member of this class or a base.
+  MSVC error C4458.
+- `PlayerState` hides `APawn::PlayerState`.
+  Use `OwnerState` for an `AJoA_PlayerState*`.
+- The same covers `Owner`, `Controller`,
+  `Instigator`, and `RootComponent`.
 
 # Renames follow the class
-- When a class is renamed, rename every member of that type in other classes.
-- Rename the Get and Set functions for that member to the same name.
-- `UJoA_GAS_CombatSet` uses `CombatSet`, `GetCombatSet`, and `SetCombatSet`.
+- When a class is renamed, rename every member of
+  that type in other classes.
+- Rename the Get and Set functions for that member
+  to the same name.
+- `UJoA_GAS_CombatSet` uses `CombatSet`,
+  `GetCombatSet`, and `SetCombatSet`.
 
 # Renames that leave references
-- Do not add `ClassRedirects`, `ObjectRedirects`, `PropertyRedirects`, or `EnumRedirects` to `Config/DefaultEngine.ini`.
-- Tell the user the old name, the new name, and which assets still store the old name. Then give the steps for that kind of rename.
+- Do not add `ClassRedirects`, `ObjectRedirects`,
+  `PropertyRedirects`, or `EnumRedirects` to
+  `Config/DefaultEngine.ini`.
+- Tell the user the old name, the new name, and
+  which assets still store the old name. Then give
+  the steps for that kind of rename.
 
 ## Asset moved or renamed in Content
-- Right-click the folder in the Content Browser and run Update Redirector References.
-- That command loads `UObjectRedirector` assets in the folder, resaves referencers onto the new asset, and can delete the redirectors.
-- Save the packages it dirties.
+- Right-click the folder in the Content Browser
+  and run Update Redirector References.
+- That loads `UObjectRedirector` assets, resaves
+  referencers onto the new asset, and can delete
+  the redirectors. Save the packages it dirties.
 
-## C++ class, property, struct, enum, or component name
-- Update Redirector References finds nothing. A C++ rename does not create a redirector asset.
+## C++ class, property, struct, enum, or component
+- Update Redirector References finds nothing.
+  A C++ rename does not create a redirector.
 - Recompile and restart the editor.
-- Open each Blueprint that still uses the old name. Delete the broken component or rewire the broken pin, then Compile and Save.
-- If the Blueprint parent class itself was renamed, the asset will not open. Say so and ask before adding a `ClassRedirect`.
+- Open each Blueprint that still uses the old name.
+  Delete the broken component or rewire the broken
+  pin, then Compile and Save.
+- If the Blueprint parent class itself was renamed,
+  the asset will not open. Say so and ask before
+  adding a `ClassRedirect`.
 
 # Sound file names
 When the user writes `check sound`, rename every
@@ -79,6 +81,8 @@ file in `Content/Audio/SFX/`.
   Do not submit.
 
 # Cursor rule file names
-- A new rule in `.cursor/rules/` uses camelCase: `nameName.mdc`.
-- `binaryGraphicsWorkflow.mdc` is right. `binary-graphics-workflow.mdc` is wrong.
+- A new rule in `.cursor/rules/` uses camelCase:
+  `nameName.mdc`.
+- `binaryGraphicsWorkflow.mdc` is right.
+  `binary-graphics-workflow.mdc` is wrong.
 - One word stays one word: `naming.mdc`, `gas.mdc`.

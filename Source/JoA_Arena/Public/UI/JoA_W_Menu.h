@@ -6,6 +6,7 @@
 
 // --- Engine ---
 #include "Blueprint/UserWidget.h"
+#include "Engine/TimerHandle.h"
 #include "Types/SlateEnums.h"
 
 #include "JoA_W_Menu.generated.h"
@@ -42,8 +43,21 @@ protected:
 	virtual void NativeTick(
 		const FGeometry& MyGeometry,
 		float InDeltaTime) override;
+	virtual void NativeDestruct() override;
 
 	void ApplyMenuNotice();
+
+	/* Puts the line on the block. A non-empty line
+	 * is cleared five seconds later. */
+	void ShowTimedLine(
+		UTextBlock* Block,
+		const FText& Text,
+		FTimerHandle& Handle,
+		void (UJoA_W_Menu::*Hide)(),
+		bool bCollapse);
+
+	void HideInfoLine();
+	void HideStatusLine();
 
 	UFUNCTION()
 	void OnNewGameClicked();
@@ -161,17 +175,23 @@ protected:
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UEditableTextBox> ET_Address;
 
-	// Shows the join in progress.
+	// Join or host progress. Gone after five seconds.
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> TB_Status;
 
-	/* Why the player is back in the menu: left the match,
-	 * or the host closed the connection. Hidden when
-	 * there is nothing to say. */
+	/* Why the player is back in the menu, or a bad
+	 * seed. Shown for five seconds, then hidden. */
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> TB_Info;
 
 	/* TB_Info is also the leave-match notice.
 	 * A bad seed must not be wiped by that path. */
 	bool bShowingSeedNotice = false;
+
+	/* The leave-match line already had its five
+	 * seconds. Settings must not bring it back. */
+	bool bInfoDismissed = false;
+
+	FTimerHandle InfoHideHandle;
+	FTimerHandle StatusHideHandle;
 };

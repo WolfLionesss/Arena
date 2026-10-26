@@ -1,30 +1,27 @@
 ---
-description: C++ and code comments guidelines.
+description: When to comment, and the 60-character comment format.
 alwaysApply: true
 ---
 
 # General
-- Do NOT write the comment "NetCore is already listed in JoA_Arena.Build.cs." or any similar variation.
-- Do not comment what the next line already says. Naming the class, the member, or the `CreateDefaultSubobject` string tells the reader nothing. Leave the comment out.
-- Do not write a comment that restates the value or the edit, such as "Mesh asset faces sideways. Offset 90 on Z." A comment describes the functionality or the problem the code solves: what breaks without it, and why it is needed.
-- Bad: `// Offset 90 on Z.` Good: a comment saying the imported mesh faces sideways, so figures looked away from the board, and the offset aligns it with Facing.
-- Write a comment only for a reason the code cannot show: a gameplay rule, a replication choice, an engine trap, or a constraint.
-- Follow these strict rules for generating code comments based on length and code context:
+- Do not comment what the next line already says.
+  That includes a `CreateDefaultSubobject` name and
+  "NetCore is already listed in JoA_Arena.Build.cs."
+- A comment states what the code cannot show: a
+  gameplay rule, a replication choice, an engine
+  trap, or a constraint. Say what breaks without it.
+- No comment line exceeds 60 characters.
 
-1. Maximum Line Length:
-- No line of any comment must exceed 60 characters. Wrap text to a new line as needed.
-
-2. Short Comments (<= 60 characters total):
-- Use single-line comment syntax: `// Comment text`
-
-3. Long Comments (> 60 characters total) for Methods, Enum items, and General Logic:
-- If the total comment length exceeds 60 characters, format it as a multi-line comment:
+# Form
+- At most 60 characters total: `// Comment text`
+- Longer than 60, on a method, an enum item, or
+  logic:
   /* Line 1 text.
    * Line 2 text. */
-
-4. Definitions (Classes, Structs, Interfaces, Types, or any other structural definitions):
-- Always use documentation comment syntax (JSDoc/Docstring style), regardless of length, formatted as:
+- A class, struct, interface, or other type uses a
+  doc comment, any length:
   /**
    * Definition description.
    */
-- DO NOT use this style for methods, functions, or enum items.
+- Do not use a doc comment on a method, a function,
+  or an enum item.

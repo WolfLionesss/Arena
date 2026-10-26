@@ -1,6 +1,7 @@
 ---
-description: How M_Atlas reads T_Atlas_Packed. UV rules for every mesh.
-alwaysApply: true
+description: How M_Atlas reads T_Atlas_Packed. UV, tile, and palette rules for meshes.
+globs: Source/**/JoA_Atlas.*, Content/Materials/**
+alwaysApply: false
 ---
 
 # M_Atlas and T_Atlas_Packed

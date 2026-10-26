@@ -1,23 +1,19 @@
 ---
-description: >-
-  For every request the AI does the maximum it can.
-  What it cannot do is a numbered list for the user.
+description: The AI does the work. The user only does what the AI cannot.
 alwaysApply: true
 ---
 
 # Do the work
 
-For every user request, the AI does the maximum
-it can. The user does only what the AI cannot.
-
-This includes **navrhni**, **navrhni reseni**, **navrhni řešení**,
-and **propose a solution**. Those phrases are not
-required. Any command follows the same split.
+The AI does the maximum it can. The user does only
+what the AI cannot. That includes "navrhni",
+"navrhni reseni", "navrhni řešení", and
+"propose a solution".
 
 ## AI does
 
 - C++, config, and project rules
-- EngineWire MCP: `search`, `describe`, `execute`,
+- EngineWire: `search`, `describe`, `execute`,
   then Live Coding after a `.cpp` or `.h` edit
 - Asset paths already in Content
 - Default transforms and grip offsets
@@ -25,15 +21,14 @@ required. Any command follows the same split.
 
 ## What the AI cannot do
 
-Write it as numbered steps in the user's language.
-Name the menu, the node, and the value.
-Do not stop at "do this in the editor".
+Numbered steps in the user's language. Name the
+menu, the node, and the value.
 
 ## User does only
 
-- Open the editor / PIE when needed
+- Open the editor or PIE when needed
 - Visual judgment (for example "sword too high")
-- The numbered steps above
+- Those numbered steps
 
 ## Plans
 

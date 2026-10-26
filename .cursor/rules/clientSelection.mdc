@@ -1,6 +1,7 @@
 ---
-description: Client figure selection must keep working after HUD or net changes.
-alwaysApply: true
+description: Client figure selection. Portraits, world click, and keys 1-4 must survive HUD and replication edits.
+globs: Source/**/UI/**, Source/**/JoA_Figure*, Source/**/JoA_PlayerState*
+alwaysApply: false
 ---
 
 # Client figure selection
@@ -42,20 +43,17 @@ keep the board centre free of HUD hits.
 
 ## OwnsFigure
 
-The `OwningPlayerState` pointer can still be
-unmapped. Match `SeatIndex` to `OwningPlayerIndex`.
-`SyncFigures` waits until one of those is known.
-Do not leave an own figure in `HB_OpponentFigures`
-or with `SetClickable(false)`.
+`OwningPlayerState` can still be unmapped. Match
+`SeatIndex` to `OwningPlayerIndex`. `SyncFigures`
+waits until one of those is known. Do not leave an
+own figure in `HB_OpponentFigures` or with
+`SetClickable(false)`.
 
 `OnRep_SeatIndex` on the player state and
 `OnRep_OwningPlayerIndex` on the figure must both
 `NotifyBoardChanged`. The seat int often arrives
-after the first HUD build. Without that rebuild
-own portraits stay in `HB_OpponentFigures` with
-`SetClickable(false)`. Portraits, world click,
-and keys 1-4 then all die on the client. Team
-tint in `OnRep_OwningPlayerIndex` is not enough.
+after the first HUD build. Team tint in
+`OnRep_OwningPlayerIndex` is not enough.
 
 ## Test
 

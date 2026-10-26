@@ -1,44 +1,66 @@
 ---
-description: C++ coding standards, Unreal Engine 5.8+ rules (LWC/FVector constraints), memory management, and code generation guidelines.
+description: UE 5.8.1, no constexpr math, light headers, startup state, Enhanced Input.
 globs: Source/**/*.h, Source/**/*.cpp
 alwaysApply: true
 ---
 
 # Core Engine & Version Standards
 - Engine Version: Unreal Engine 5.8.1
-- Engine path (source build): `C:\Users\xondr\Documents\Engine\UE\UnrealEngine`
-- Editor commandlet: `Engine\Binaries\Win64\UnrealEditor-Cmd.exe`
-- Language Standard: Modern C++20 compliant with UE conventions.
-- Primary IDE/Environment: JetBrains Rider with Unreal Engine plugin support.
+- Engine path (source build):
+  `C:\Users\xondr\Documents\Engine\UE\UnrealEngine`
+- Editor commandlet:
+  `Engine\Binaries\Win64\UnrealEditor-Cmd.exe`
+- Language: C++20 with UE conventions.
+- IDE: JetBrains Rider with the Unreal plugin.
 
 # General
-- CRITICAL: NEVER use `constexpr` when defining or initializing any Unreal Engine vector types (e.g., `FVector`, `FVector3f`, `FVector2D`, `TVector<double>`). 
+- Never use `constexpr` for `FVector`, `FRotator`,
+  `FQuat`, or other math types. `FVector` is
+  `TVector<double>` and its constructors are not
+  `constexpr`. Use `const`.
 
-- In modern Unreal Engine versions (including UE 5.x), `FVector` is backed by `TVector<double>` for Large World Coordinates (LWC), and its constructors are NOT `constexpr`. 
-
-**Mandatory Rules:**
-1. **Use `const` instead of `constexpr`:** When initializing a vector that should not change, always use `const FVector VariableName(...)`.
-2. **Check macro/constructor compatibility:** Never place math objects (Vectors, Rotators, Quats) into `constexpr` contexts, as it will break the compilation.
-
-# Architecture & Code Quality Constraints
-- Follow standard Unreal Engine naming conventions: `A` for Actors, `U` for Objects, `F` for Structs, `E` for Enums.
-- Use `TObjectPtr<T>` for raw object pointer UPROPERTY declarations instead of `T*`.
-- Ensure proper use of `UPROPERTY()`, `UFUNCTION()`, `GENERATED_BODY()`, and forward declarations (`class AMyClass;`) in header files to minimize compile dependencies.
-- Keep headers lightweight; place includes in `.cpp` files whenever possible.
-- A forward declaration is not a definition. The `.cpp` that reads a member or calls a method must include the header that defines that type.
-- `TObjectPtr<T>` does not complete `T`. `AGameModeBase::GameState` is `TObjectPtr<AGameStateBase>`, and `World.h` / `GameModeBase.h` only forward-declare `AGameStateBase`. Include `GameFramework/GameStateBase.h` before any use of `GameState->PlayerArray` or another `AGameStateBase` member. Without it, MSVC reports C2027 (undefined type) and C2039 (`PlayerArray` is not a member of `TObjectPtr<AGameStateBase>`).
-- Wrap server-only logic inside `HasAuthority()` checks or execute strictly within `AGameModeBase` / `AGameMode`.
-
-# Output Style Requirements
-- Produce COMPLETE, copy-pasteable header (`.h`) and implementation (`.cpp`) files.
-- Include clear inline comments explaining multi-player replication logic and turn handling.
+# Architecture
+- `A` Actor, `U` Object, `F` struct, `E` enum.
+- Use `TObjectPtr<T>` for UPROPERTY object pointers
+  instead of `T*`.
+- Use `UPROPERTY()`, `UFUNCTION()`,
+  `GENERATED_BODY()`, and forward declarations in
+  headers. Put includes in the `.cpp` when you can.
+- A forward declaration is not a definition. The
+  `.cpp` that reads a member or calls a method
+  includes the header that defines that type.
+- `TObjectPtr<T>` does not complete `T`.
+  `AGameModeBase::GameState` is
+  `TObjectPtr<AGameStateBase>`, and `World.h` /
+  `GameModeBase.h` only forward-declare it. Include
+  `GameFramework/GameStateBase.h` before
+  `GameState->PlayerArray` or any other
+  `AGameStateBase` member. Without it, MSVC reports
+  C2027 and C2039.
+- Server-only logic sits in `HasAuthority()` or in
+  `AGameModeBase` / `AGameMode`.
 
 # Startup state
-- A value set once at the start of the game does not belong in `Tick`, `PlayerTick`, or `NativeTick`.
-- Set it from `BeginPlay`, `ReceivedPlayer`, or possess. If that call runs again, return when the value is already set.
+- A value set once at the start of the game does
+  not belong in `Tick`, `PlayerTick`, or
+  `NativeTick`.
+- Set it from `BeginPlay`, `ReceivedPlayer`, or
+  possess. If that call runs again, return when
+  the value is already set.
 
 # Player input
-- This project uses Enhanced Input. Keyboard events on a Level Blueprint do not receive keys.
-- `APlayerController` reads keys in `TickActor`. Leave `PrimaryActorTick.bCanEverTick` true.
-- `SetInputMode` during `BeginPlay` or `ReceivedPlayer` runs before the PIE viewport widget exists, so the focus is dropped. Apply it again after `UGameViewportClient::GetGameViewportWidget()` is valid, then call `FSlateApplication::ActivateGameViewport()`. Slate focus alone does not deliver `WM_KEYDOWN`.
-- `UEnhancedPlayerInput::GetEnhancedActionMappings` is protected. Read mappings with `GetEnhancedActionMappingsView()`.
+- This project uses Enhanced Input. Keyboard events
+  on a Level Blueprint do not receive keys.
+- `APlayerController` reads keys in `TickActor`.
+  Leave `PrimaryActorTick.bCanEverTick` true.
+- `SetInputMode` during `BeginPlay` or
+  `ReceivedPlayer` runs before the PIE viewport
+  widget exists, so the focus is dropped. Apply it
+  again after
+  `UGameViewportClient::GetGameViewportWidget()`
+  is valid, then call
+  `FSlateApplication::ActivateGameViewport()`.
+  Slate focus alone does not deliver `WM_KEYDOWN`.
+- `UEnhancedPlayerInput::GetEnhancedActionMappings`
+  is protected. Read mappings with
+  `GetEnhancedActionMappingsView()`.

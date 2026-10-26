@@ -1,40 +1,82 @@
 ---
-description: GAS architecture for this project. Concepts from Tranek. Code procedure from Narxim. The ASC stays on the figure.
-globs: Source/**/*.h, Source/**/*.cpp
+description: GAS for this project. Narxim is the code sample. The ASC stays on the figure.
 alwaysApply: true
 ---
 
-# Default
-- Always prefix class names with `JoA_GAS_`
+# Reference
+- Concepts: Tranek,
+  https://github.com/tranek/GASDocumentation
+- Code: `C:\Game\Arena\Narxim-GAS-Example\Source\GAS_Example`.
+  When they differ, follow Narxim.
+- Before writing an ability, an attribute set, or
+  Enhanced Input for an ability, read the matching
+  Narxim file and follow that procedure.
+- Narxim is Unreal 5.6. This project is 5.8.1.
+  Copy the procedure, not the engine version.
 
-# Core Reference & Documentation
-- **Concepts**: Tranek's GAS Documentation, https://github.com/tranek/GASDocumentation
-- **Code**: `narximGas.mdc` and `C:\Game\Arena\Narxim-GAS-Example\Source\GAS_Example`. When the two differ, follow Narxim.
-- Naming, the `JoA_GAS_` prefix, attribute accessors, clamping, and tags below still apply.
+# Names
+- Ability classes use the prefix `JoA_GAS_`.
+- Name an attribute set for the stats it holds,
+  suffix `Set`. Health and attack live on `CombatSet`,
+  not `JoA_AttributeSet`.
+- Numeric stats are a `UAttributeSet` with
+  `ATTRIBUTE_ACCESSORS`.
 
-# Architecture & Component Placement
-- **ASC Location**:
-  - Place `UAbilitySystemComponent` and its `UAttributeSet` on the figure. The figure owns the stats.
-  - One player fields several figures, so the ASC does not go on `APlayerState`.
-- **Initialization Lifecycle**:
-  - Server: `PossessedBy()`, then `InitAbilityActorInfo` with the figure as both owner and avatar.
-  - Client: when the owning player state replicates, not in `BeginPlay`.
+# Where the ASC lives
+- `UAbilitySystemComponent` and its attribute sets
+  stay on the figure. One player fields several
+  figures, so the ASC does not go on `APlayerState`.
+- Server: `PossessedBy()`, then
+  `InitAbilityActorInfo` with the figure as owner
+  and avatar. Same order as Narxim
+  `Characters/CharacterBase.cpp`.
+- Client: when the owning player state replicates,
+  not in `BeginPlay`.
 
-# Attributes & Gameplay Effects
-- Never use generic, project-wide, or default names (e.g., `JoA_AttributeSet`).
-- Always name the `AttributeSet` based on the specific context of the stats it contains.
-- *Example:* If the stats include Health, Stamina, Mana, Attack, Defense, or Heal, name the class `CombatSet`.
-- Always use `Set` as the class name suffix.
-- Use `UAttributeSet` for all numeric stats (Health, Mana, Action Points, Energy, etc.).
-- ALWAYS use the standard GAS macro block (`ATTRIBUTE_ACCESSORS`) in C++ headers for attribute getters, setters, and initializers.
-- Enforce Attribute clamping both in `PreAttributeChange()` (for instant changes) and `PostGameplayEffectExecute()` (for GE modifications).
-- Execute gameplay logic via `UGameplayEffect` (GEs) rather than setting attributes directly.
+# Abilities and input
+- A new ability is its own `JoA_GAS_` class, in the
+  style of
+  `AbilitySystem/GameplayAbilities/CustomGameplayAbility`.
+- The ability holds the `UInputAction`. Bind it on
+  the Enhanced Input component in `OnGiveAbility`.
+  Clear that binding when the ability is removed.
+- Wait for input with an ability task, as in
+  `AbilitySystem/AbilityTasks/AbilityTask_WaitEnhancedInputEvent`.
+- Do not bind gameplay actions as one-off test keys
+  on the player controller.
 
-# Gameplay Tags & Flow Control
-- Use `FGameplayTag` and `FGameplayTagContainer` for state management, turn phases (e.g., `State.Turn.Player1`, `State.Phase.Action`), status effects, and abilities blocking/canceling.
-- Prefer native C++ defined tags via `FNativeGameplayTag` over loose string declarations.
+# Attributes and effects
+- Split attribute sets by concern. Replicate them
+  with `DOREPLIFETIME_WITH_PARAMS_FAST` and
+  `bIsPushBased`, as in
+  `AttributeSets/HealthAttributeSet.cpp`.
+- Clamp in `PreAttributeChange()` and in
+  `PostGameplayEffectExecute()`.
+- Change stats through a `UGameplayEffect`. Damage
+  and healing go through a meta attribute and a
+  server execution, not a SetByCaller write onto
+  Health.
+- The server grants starting sets, abilities,
+  effects, and tags from one initialization struct.
+  See `AbilitySystem/Data/AbilitySystemData.h` and
+  `InitializeAbilitySystemData`.
+- A turn-based damage-over-time or buff follows
+  `AbilitySystem/GameplayEffects/TurnBased`, not a
+  real-time periodic effect.
 
-# Logic Execution & Optimization
-- **NO Logic in Tick**: Avoid putting game logic, timer checks, or phase polling in `Tick()` or `NativeTick()`.
-- **Event-Driven**: Trigger actions, abilities, and UI updates strictly using GAS Gameplay Events (`UAbilitySystemBlueprintLibrary::SendGameplayEventToActor`), Gameplay Tags, and Attribute Change delegates (`GetGameplayAttributeValueChangeDelegate`).
-- Keep `UGameplayAbility` logic asynchronous where possible by utilizing `UAbilityTask` (e.g., waiting for events, input, or targets).
+# Tags and flow
+- Use `FGameplayTag` and `FNativeGameplayTag` for
+  turn phase, status, and cancel.
+- No game logic, timers, or phase polling in
+  `Tick()` or `NativeTick()`.
+- Drive actions and UI from gameplay events, tags,
+  and attribute change delegates. Wait inside a
+  `UAbilityTask`.
+
+# Do not copy from Narxim
+- Iris replicates the board, cells, and figure
+  state. GAS attribute data stays on the push model
+  above.
+- Do not set a 100 Hz net update frequency.
+- Do not bring movement, CommonUI, Model View
+  ViewModel, or the AGRPRO plugin.

@@ -19,6 +19,7 @@
 #include "Components/Widget.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "TimerManager.h"
 
 // --- GAME ---
 #include "Match/JoA_GameInstance.h"
@@ -28,6 +29,9 @@
 namespace
 {
 	const TCHAR* DefaultPort = TEXT("7777");
+	/* A menu line is read once. It stays five
+	 * seconds, then the menu is clear again. */
+	const float NoticeSeconds = 5.f;
 	const FName MenuColumnName(TEXT("VerticalBox_55"));
 	const uint8 PageMain = 0;
 	const uint8 PageSettings = 1;
@@ -189,11 +193,16 @@ void UJoA_W_Menu::NativeConstruct()
 			Instance->ConsumeNetworkNotice();
 		if (!Notice.IsEmpty())
 		{
-			TB_Status->SetText(JoA_UIText(
-				TEXT("Menu.JoinFailed"),
-				FFormatOrderedArguments{
-					FText::FromString(Notice)
-				}));
+			ShowTimedLine(
+				TB_Status,
+				JoA_UIText(
+					TEXT("Menu.JoinFailed"),
+					FFormatOrderedArguments{
+						FText::FromString(Notice)
+					}),
+				StatusHideHandle,
+				&UJoA_W_Menu::HideStatusLine,
+				false);
 		}
 	}
 }
@@ -209,8 +218,12 @@ void UJoA_W_Menu::OnNewGameClicked()
 
 	if (TB_Status)
 	{
-		TB_Status->SetText(
-			JoA_UIText(TEXT("Menu.CreatingSession")));
+		ShowTimedLine(
+			TB_Status,
+			JoA_UIText(TEXT("Menu.CreatingSession")),
+			StatusHideHandle,
+			&UJoA_W_Menu::HideStatusLine,
+			false);
 	}
 
 	/* Steam lobby first, then Arena listen, then the
@@ -254,11 +267,16 @@ void UJoA_W_Menu::OnJoinGameClicked()
 	 * failure, and the engine returns to this map. */
 	if (TB_Status)
 	{
-		TB_Status->SetText(JoA_UIText(
-			TEXT("Menu.Connecting"),
-			FFormatOrderedArguments{
-				FText::FromString(Address)
-			}));
+		ShowTimedLine(
+			TB_Status,
+			JoA_UIText(
+				TEXT("Menu.Connecting"),
+				FFormatOrderedArguments{
+					FText::FromString(Address)
+				}),
+			StatusHideHandle,
+			&UJoA_W_Menu::HideStatusLine,
+			false);
 	}
 
 	/* A player who left a held seat comes back to it with
@@ -282,10 +300,117 @@ void UJoA_W_Menu::NativeTick(
 	UpdateCanTick();
 }
 
+void UJoA_W_Menu::NativeDestruct()
+{
+	/* Travel can destroy the menu before five
+	 * seconds. The notice key stays for the next
+	 * menu. Only the timers go. */
+	if (UWorld* World = GetWorld())
+	{
+		FTimerManager& Timers = World->GetTimerManager();
+		Timers.ClearTimer(InfoHideHandle);
+		Timers.ClearTimer(StatusHideHandle);
+	}
+	Super::NativeDestruct();
+}
+
+void UJoA_W_Menu::ShowTimedLine(
+	UTextBlock* Block,
+	const FText& Text,
+	FTimerHandle& Handle,
+	void (UJoA_W_Menu::*Hide)(),
+	bool bCollapse)
+{
+	if (!Block)
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (Text.IsEmpty())
+	{
+		Block->SetText(FText::GetEmpty());
+		if (bCollapse)
+		{
+			Block->SetVisibility(
+				ESlateVisibility::Collapsed);
+		}
+		if (World)
+		{
+			World->GetTimerManager().ClearTimer(Handle);
+		}
+		return;
+	}
+
+	/* NativeTick reads the notice every frame.
+	 * The same line must not restart the five
+	 * seconds. A seed line is not read again. */
+	if (Block->GetText().EqualTo(Text)
+		&& World
+		&& World->GetTimerManager().IsTimerActive(Handle))
+	{
+		return;
+	}
+
+	Block->SetText(Text);
+	if (bCollapse)
+	{
+		Block->SetVisibility(
+			ESlateVisibility::HitTestInvisible);
+	}
+	if (!World)
+	{
+		return;
+	}
+
+	World->GetTimerManager().SetTimer(
+		Handle,
+		this,
+		Hide,
+		NoticeSeconds,
+		false);
+}
+
+void UJoA_W_Menu::HideInfoLine()
+{
+	if (!bShowingSeedNotice)
+	{
+		bInfoDismissed = true;
+	}
+	bShowingSeedNotice = false;
+	ShowTimedLine(
+		TB_Info,
+		FText::GetEmpty(),
+		InfoHideHandle,
+		&UJoA_W_Menu::HideInfoLine,
+		true);
+}
+
+void UJoA_W_Menu::HideStatusLine()
+{
+	ShowTimedLine(
+		TB_Status,
+		FText::GetEmpty(),
+		StatusHideHandle,
+		&UJoA_W_Menu::HideStatusLine,
+		false);
+}
+
 void UJoA_W_Menu::ApplyMenuNotice()
 {
 	if (!TB_Info || bShowingSeedNotice)
 	{
+		return;
+	}
+
+	if (bInfoDismissed)
+	{
+		ShowTimedLine(
+			TB_Info,
+			FText::GetEmpty(),
+			InfoHideHandle,
+			&UJoA_W_Menu::HideInfoLine,
+			true);
 		return;
 	}
 
@@ -295,14 +420,15 @@ void UJoA_W_Menu::ApplyMenuNotice()
 		? Instance->GetMenuNotice()
 		: FName(NAME_None);
 	const bool bHasNotice = !NoticeKey.IsNone();
-	TB_Info->SetText(
-		bHasNotice
-			? JoA_UIText(NoticeKey)
-			: FText::GetEmpty());
-	TB_Info->SetVisibility(
-		bHasNotice
-			? ESlateVisibility::HitTestInvisible
-			: ESlateVisibility::Collapsed);
+	const FText Line = bHasNotice
+		? JoA_UIText(NoticeKey)
+		: FText::GetEmpty();
+	ShowTimedLine(
+		TB_Info,
+		Line,
+		InfoHideHandle,
+		&UJoA_W_Menu::HideInfoLine,
+		true);
 }
 
 void UJoA_W_Menu::OnSettingsClicked()
@@ -507,9 +633,12 @@ void UJoA_W_Menu::ShowSeedNotice(bool bInvalid)
 		return;
 	}
 
-	TB_Info->SetText(SeedRangeNotice());
-	TB_Info->SetVisibility(
-		ESlateVisibility::HitTestInvisible);
+	ShowTimedLine(
+		TB_Info,
+		SeedRangeNotice(),
+		InfoHideHandle,
+		&UJoA_W_Menu::HideInfoLine,
+		true);
 }
 
 void UJoA_W_Menu::ApplySeedText(int32 Seed)

@@ -1,41 +1,52 @@
 ---
-description: Binary assets and graphics tasks. Say first what the agent can do alone.
-alwaysApply: true
+description: PNG, TGA, JPG, textures, masks, atlases, meshes, uasset, umap, or Krita. Say first what the agent can do alone.
+alwaysApply: false
 ---
 
 # Binary and graphics tasks
 
-When the user asks for a procedure that touches a binary or a graphic asset, check what the agent can do itself before writing steps. Binary or graphic means `.uasset`, `.umap`, textures, PNG, masks, atlases, materials, meshes, and image editors such as Krita.
+When the user asks for a procedure that touches a
+binary or a graphic asset, check what the agent can
+do itself before writing steps. Binary or graphic
+means `.uasset`, `.umap`, textures, PNG, masks,
+atlases, materials, meshes, and image editors such
+as Krita.
 
-Open the answer with one of these three statements. Write it in the language of the user.
+Open the answer with one of these three statements.
+Write it in the language of the user.
 
 1. **Alone.** "Tuhle část mohu udělat sám bez tvé pomoci."
-   - Do the work. Do not write a manual procedure for it.
-   - Report which file was created or changed and where.
+   - Do the work. Do not write a manual for it.
+   - Report which file changed and where.
 2. **Partly.** "Mohu to udělat zčásti sám, ale potřebuji od tebe ..."
    - Do the part you can.
-   - Name exactly what you need: a path, a choice, a screenshot, an editor action.
+   - Name exactly what you need: a path, a choice,
+     a screenshot, an editor action.
    - Give exact steps for the rest.
 3. **Not possible.** "Toto sám nedokážu a napíšu ti přesný postup krok za krokem."
-   - State the reason in one sentence, for example a binary `.uasset` cannot be edited from code.
-   - Write numbered steps with exact menu names, node names, and values.
+   - State the reason in one sentence.
+   - Write numbered steps with exact menu names,
+     node names, and values.
 
 # What the agent can usually do
 
-- Read, crop, and analyse PNG, TGA, and JPG files with PowerShell and `System.Drawing`. Python may not be installed.
-- Generate new images, such as masks, atlases, and previews, and save them to the project.
-- Check the result by reading the generated image back, then show a preview.
+- Read, crop, and analyse PNG, TGA, and JPG with
+  PowerShell and `System.Drawing`. Python may be
+  missing.
+- Generate masks, atlases, and previews, and save
+  them in the project.
+- Read the new image back, then show a preview.
 
 # What the agent cannot do
 
-- Edit `.uasset` and `.umap` files. Materials, Blueprints, and imported textures live there.
-- Import an asset into Unreal or change its texture settings.
-- Work inside the Unreal editor or the Krita window.
+- Edit `.uasset` and `.umap`. Materials, Blueprints,
+  and imported textures live there.
+- Import an asset into Unreal or change its
+  texture settings.
+- Work inside the Unreal editor or Krita.
 
 # Rules
 
-- Do not write a long manual procedure for a part the agent can do itself.
 - Do not claim a binary was edited when it was not.
-- Search only inside the project workspace. Ask the user for a path outside it.
-- A new file follows `p4.mdc`: add it to the
-  numbered CL of this work, and never submit.
+- Search only inside the project workspace. Ask
+  the user for a path outside it.
